@@ -24,5 +24,6 @@ int main(void)
 	GPIO_Handle_t *pGPIOHandle;
 	pGPIOHandle->pGPIOx = GPIOA;
     /* Loop forever */
+	//Just giving commands
 	for(;;);
 }
