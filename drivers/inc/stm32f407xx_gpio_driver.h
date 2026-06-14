@@ -49,9 +49,6 @@ void GPIO_IRQHandling(uint8_t PinNumber);
 #define MODE_OUTPUT       1
 #define MODE_ALTFN        2
 #define MODE_ANALOG       3
-#define MODE_INT_FT       4
-#define MODE_INT_RT       5
-#define MODE_INT_FRT      6
 
 //GPIO OTYPER Register macro
 #define OTYPER_PP         0

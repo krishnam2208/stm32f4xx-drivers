@@ -23,6 +23,7 @@
 #define APB2PERIPH_BASEADDR     0x40010000U
 #define AHB1PERIPH_BASEADDR     0x40020000U
 #define AHB2PERIPH_BASEADDR     0x50000000U
+#define NVIC_ISER_BASEADDR      0xE000E100U
 
 #define GPIOA_BASEADDR			(AHB1PERIPH_BASEADDR + 0x0000U)
 #define GPIOB_BASEADDR			(AHB1PERIPH_BASEADDR + 0x0400U)
@@ -103,6 +104,26 @@ typedef struct{
 
 }RCC_RegDef_t;
 
+typedef struct{
+	__vo uint32_t MEMRMP;
+	__vo uint32_t PMC;
+	__vo uint32_t EXTICR[4];
+	__vo uint32_t CMPCR;
+}SYSCONFIG_regDef_t;
+
+typedef struct{
+	__vo uint32_t EXTI_IMR;
+	__vo uint32_t EXTI_EMR;
+	__vo uint32_t EXTI_RTSR;
+	__vo uint32_t EXTI_FTSR;
+	__vo uint32_t EXTI_SWIER;
+	__vo uint32_t EXTI_PR;
+}EXTI_regDef_t;
+
+typedef struct{
+	__vo uint32_t NVIC_ISERx[8];
+}NVIC_ISER_regDef_t;
+
 #define GPIOA                  ((GPIO_RegDef_t *) GPIOA_BASEADDR)
 #define GPIOB                  ((GPIO_RegDef_t *) GPIOB_BASEADDR)
 #define GPIOC                  ((GPIO_RegDef_t *) GPIOC_BASEADDR)
@@ -117,13 +138,29 @@ typedef struct{
 
 #define RCC                    ((RCC_RegDef_t *) RCC_BASEADDR)
 
+#define SYSCFG                 ((SYSCONFIG_regDef_t *)SYSCFG_BASEADDR)
+
+#define EXTI                   ((EXTI_regDef_t *)EXTI_BASEADDR)
+#define NVIC_ISER			   ((NVIC_ISER_regDef_t *)NVIC_ISER_BASEADDR)
+
 //Clock Enable for GPIOA
 #define  GPIOA_PCLK_EN()       (RCC->AHB1ENR |= (1<<0));
+//GPIOD
+#define  GPIOD_PCLK_EN()       (RCC->AHB1ENR |= (1<<3));
 
 //Clock Disable for GPIOA
 #define  GPIOA_PCLK_DI()       (RCC->AHB1ENR &= ~(1<<0));
+#define  GPIOD_PCLK_DI()       (RCC->AHB1ENR &= ~(1<<3));
 
 //Clock Enable for I2C1
+
+#define SYSCONFIG_PCLK_EN()    (RCC->APB2ENR |= (1<<14));
+#define  SYSCONFIG_PCLK_DI()       (RCC->APB2ENR &= ~(1<<14));
+
+#define SYSCONFIG_PCLK_EN()    (RCC->APB2ENR |= (1<<14));
+#define  SYSCONFIG_PCLK_DI()       (RCC->APB2ENR &= ~(1<<14));
+
+
 
 
 #define  GPIOA_RESET()      do{RCC->AHB1RSTR |= (1<<0); RCC->AHB1RSTR &= ~(1<<0);}while(0)
@@ -131,6 +168,9 @@ typedef struct{
 //Some Generic macros
 #define ENABLE     1
 #define DISABLE    0
+#define RT         1
+#define FT         2
+#define RTFT       3
 
 
 

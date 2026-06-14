@@ -17,13 +17,57 @@
  */
 #include "stm32f407xx_gpio_driver.h"
 #include "stm32f407xx.h"
+#include "stm32f407xx_sysconfig_driver.h"
+#include "stm32f4xx_exti_drivers.h"
+#include <stdio.h>
+
+void LED_Output_Configure(GPIO_Handle_t *pGPIOHandle){
+	GPIO_PeripheralClockControl(pGPIOHandle->pGPIOx, ENABLE);
+	pGPIOHandle->GPIO_pinConfig.GPIO_PinNumber = 12;
+	pGPIOHandle->GPIO_pinConfig.GPIO_PinMode =1;
+	GPIO_Init(pGPIOHandle);
+	//GPIO_WriteToOutputPin(pGPIOHandle->pGPIOx,pGPIOHandle->GPIO_pinConfig.GPIO_PinNumber, 1);
+
+}
+void Button_Input_Configure(GPIO_Handle_t *pGPIOHandle){
+	GPIO_PeripheralClockControl(pGPIOHandle->pGPIOx, ENABLE);
+	pGPIOHandle->GPIO_pinConfig.GPIO_PinNumber = 0;
+	pGPIOHandle->GPIO_pinConfig.GPIO_PinMode =0;
+	GPIO_Init(pGPIOHandle);
+}
+
+
 
 
 int main(void)
 {
-	GPIO_Handle_t *pGPIOHandle;
-	pGPIOHandle->pGPIOx = GPIOA;
+
+	GPIO_Handle_t pGPIOHandle;
+	pGPIOHandle.pGPIOx = GPIOD;
+	LED_Output_Configure(&pGPIOHandle);
+	pGPIOHandle.pGPIOx = GPIOA;
+	Button_Input_Configure(&pGPIOHandle);
+	SYSCONFIG_Handle_t pSYSCONFIGx;
+	pSYSCONFIGx.SYSCONFIG_pinConfig.SYSCONFIG_PinNumber = 0;
+	pSYSCONFIGx.pSYSCONFIG = SYSCFG;
+	SYSCONFIG_PeripheralClockControl(SYSCFG,1);
+	SYSCONFIG_ENABLE_EXTI(&pSYSCONFIGx,0);
+	EXTI_Handle_t pEXTIHandle;
+	pEXTIHandle.pEXTI = EXTI;
+	pEXTIHandle.pEXTIConfig.pinNumber = 0;
+	pEXTIHandle.pEXTIConfig.triggerType = FT;
+	EXTIConfig(&pEXTIHandle);
+	NVIC_ISER_Configure(6,NVIC_ISER);
     /* Loop forever */
 	//Just giving commands
-	for(;;);
+	for(;;){
+		printf("Hello\r\n");
+	}
+}
+void EXTI0_IRQHandler(void){
+
+	GPIO_ToggleOutputPin(GPIOD, 12);
+	EXTI->EXTI_PR = 1<<0;
+		//for(uint32_t i=0;i<100000000;i++);
+		//GPIO_WriteToOutputPin(GPIOD, 12,0);
 }
